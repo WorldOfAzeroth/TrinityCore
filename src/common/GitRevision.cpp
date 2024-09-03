@@ -45,13 +45,9 @@ char const* GitRevision::GetCMakeVersion()
 
 char const* GitRevision::GetHostOSVersion()
 {
-    return ""
+    return
 #ifdef TRINITY_BUILD_HOST_DISTRO_NAME
-        TRINITY_BUILD_HOST_DISTRO_NAME
-#ifdef TRINITY_BUILD_HOST_DISTRO_VERSION_ID
-        " " TRINITY_BUILD_HOST_DISTRO_VERSION_ID
-#endif
-        "; "
+        TRINITY_BUILD_HOST_DISTRO_NAME " " TRINITY_BUILD_HOST_DISTRO_VERSION_ID "; "
 #endif
         TRINITY_BUILD_HOST_SYSTEM " " TRINITY_BUILD_HOST_SYSTEM_VERSION
     ;
@@ -75,11 +71,6 @@ char const* GitRevision::GetMySQLExecutable()
 char const* GitRevision::GetFullDatabase()
 {
     return DATABASE_FULL_DATABASE;
-}
-
-char const* GitRevision::GetHotfixesDatabase()
-{
-    return DATABASE_HOTFIXES_DATABASE;
 }
 
 #ifndef TRINITY_API_USE_DYNAMIC_LINKING

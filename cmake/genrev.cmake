@@ -91,7 +91,7 @@ else()
       if(NOT rev_branch)
         set(rev_branch ${rev_hash})
       endif()
-      
+
       # normalize branch to single line (for-each-ref can output multiple lines if there are multiple branches on the same commit)
       string(REGEX MATCH "^[^ \t\r\n]+" rev_branch ${rev_branch})
     endif()
@@ -138,7 +138,7 @@ if(WIN32)
 endif()
 
 if(CMAKE_SCRIPT_MODE_FILE)
-  # hack for CMAKE_SYSTEM_PROCESSOR missing in script mode 
+  # hack for CMAKE_SYSTEM_PROCESSOR missing in script mode
   set(CMAKE_PLATFORM_INFO_DIR ${BUILDDIR}${CMAKE_FILES_DIRECTORY})
   include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 endif()
