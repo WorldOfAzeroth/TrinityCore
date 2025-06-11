@@ -46,3 +46,8 @@ if(BUILD_SHARED_LIBS)
         DESTINATION "${CMAKE_INSTALL_PREFIX}")
   endif()
 endif()
+
+# Generate precompiled header
+if(USE_COREPCH)
+  add_cxx_pch(network PrecompiledHeaders/networkPCH.h)
+endif()
