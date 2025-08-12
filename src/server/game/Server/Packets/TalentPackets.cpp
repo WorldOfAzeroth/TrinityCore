@@ -19,24 +19,103 @@
 
 namespace WorldPackets::Talent
 {
-ByteBuffer& operator>>(ByteBuffer& data, TalentInfo& talent)
+ByteBuffer& operator>>(ByteBuffer& data, PvPTalent& pvpTalent)
 {
-    data >> talent.TalentID;
-    data >> talent.Rank;
+    data >> pvpTalent.PvPTalentID;
+    data >> pvpTalent.Slot;
+
+    return data;
+}
+
+ByteBuffer& operator<<(ByteBuffer& data, PvPTalent const& pvpTalent)
+{
+    data << uint16(pvpTalent.PvPTalentID);
+    data << uint8(pvpTalent.Slot);
+
+    return data;
+}
+
+ByteBuffer& operator<<(ByteBuffer& data, ClassicTalentEntry const& talentEntry)
+{
+    data << int32(talentEntry.TalentID);
+    data << int32(talentEntry.Rank);
+
+    return data;
+}
+
+ByteBuffer& operator<<(ByteBuffer& data, ClassicTalentGroupInfo const& talentGroupInfo)
+{
+    data << uint8(talentGroupInfo.NumTalents);
+    data << Size<uint32>(talentGroupInfo.Talents);
+
+    data << uint8(talentGroupInfo.NumGlyphs);
+    data << Size<uint32>(talentGroupInfo.GlyphIDs);
+
+    data << int8(talentGroupInfo.Role);
+    data << int32(talentGroupInfo.PrimarySpecialization);
+
+    for (ClassicTalentEntry const& talentEntry : talentGroupInfo.Talents)
+        data << talentEntry;
+
+    if (!talentGroupInfo.GlyphIDs.empty())
+        data.append(talentGroupInfo.GlyphIDs.data(), talentGroupInfo.GlyphIDs.size());
+
+    return data;
+}
+
+ByteBuffer& operator<<(ByteBuffer& data, ClassicTalentInfoUpdate const& talentInfoUpdate)
+{
+    data << int32(talentInfoUpdate.UnspentTalentPoints);
+    data << uint8(talentInfoUpdate.ActiveGroup);
+    data << Size<uint32>(talentInfoUpdate.Talents);
+
+    for (ClassicTalentGroupInfo const& talents : talentInfoUpdate.Talents)
+        data << talents;
+
+    data << Bits<1>(talentInfoUpdate.IsPetTalents);
+    data.FlushBits();
+
     return data;
 }
 
 WorldPacket const* UpdateTalentData::Write()
 {
-    _worldPacket << Info;
+    _worldPacket << uint8(Info.ActiveGroup);
+    _worldPacket << uint32(Info.PrimarySpecialization);
+    _worldPacket << Size<uint32>(Info.TalentGroups);
+
+    for (TalentGroupInfo& talentGroupInfo : Info.TalentGroups)
+    {
+        _worldPacket << uint32(talentGroupInfo.SpecID);
+        _worldPacket << Size<uint32>(talentGroupInfo.TalentIDs);
+        _worldPacket << Size<uint32>(talentGroupInfo.PvPTalents);
+        _worldPacket << Size<uint32>(talentGroupInfo.GlyphIDs);
+
+        for (uint16 talent : talentGroupInfo.TalentIDs)
+            _worldPacket << uint16(talent);
+
+        for (PvPTalent talent : talentGroupInfo.PvPTalents)
+            _worldPacket << talent;
+
+        for (uint32 talent : talentGroupInfo.GlyphIDs)
+            _worldPacket << uint16(talent);
+    }
 
     return &_worldPacket;
 }
 
-void LearnTalent::Read()
+void LearnTalents::Read()
 {
     _worldPacket >> TalentID;
     _worldPacket >> Rank;
+}
+
+void LearnTalents::Read()
+{
+    _worldPacket >> TalentID;
+    _worldPacket.Read
+    for (uint16& talent : Talents)
+        _worldPacket >> talent;
 }
 
 WorldPacket const* RespecWipeConfirm::Write()
@@ -83,58 +162,21 @@ WorldPacket const* ActiveGlyphs::Write()
     return &_worldPacket;
 }
 
-void LearnPreviewTalents::Read()
+void LearnPvpTalents::Read()
 {
-    Talents.resize(_worldPacket.read<uint32>());
-    _worldPacket >> TabIndex;
-
-    for (TalentInfo& talent : Talents)
-        _worldPacket >> talent;
+    _worldPacket >> Size<uint32>(Talents);
+    for (PvPTalent& pvpTalent : Talents)
+        _worldPacket >> pvpTalent;
 }
 
-void SetPrimaryTalentTree::Read()
+WorldPacket const* LearnPvpTalentFailed::Write()
 {
-    _worldPacket >> TabIndex;
-}
+    _worldPacket << Bits<4>(Reason);
+    _worldPacket << int32(SpellID);
+    _worldPacket << Size<uint32>(Talents);
+    for (PvPTalent pvpTalent : Talents)
+        _worldPacket << pvpTalent;
 
-ByteBuffer& operator<<(ByteBuffer& data, TalentInfoUpdate const& talentInfoUpdate)
-{
-    data << uint32(talentInfoUpdate.UnspentTalentPoints);
-    data << uint8(talentInfoUpdate.ActiveGroup);
-    data << uint32(talentInfoUpdate.TalentGroups.size());
-
-    for (TalentGroupInfo const& talentGroupInfo : talentInfoUpdate.TalentGroups)
-        data << talentGroupInfo;
-
-    data << Bits<1>(talentInfoUpdate.IsPetTalents);
-    data.FlushBits();
-
-    return data;
-}
-
-ByteBuffer& operator<<(ByteBuffer& data, TalentGroupInfo const& talentGroupInfo)
-{
-    data << uint8(talentGroupInfo.Talents.size());
-    data << uint32(talentGroupInfo.Talents.size());
-
-    data << uint8(talentGroupInfo.Glyphs.size());
-    data << uint32(talentGroupInfo.Glyphs.size());
-
-    data << uint8(talentGroupInfo.SpecID);
-    data << uint32(talentGroupInfo.PrimarySpecialization);
-
-    for (TalentInfo const& talent : talentGroupInfo.Talents)
-        data << talent;
-
-    data.append(talentGroupInfo.Glyphs.data(), talentGroupInfo.Glyphs.size());
-
-    return data;
-}
-
-ByteBuffer& operator<<(ByteBuffer& data, TalentInfo const& talentInfo)
-{
-    data << uint32(talentInfo.TalentID);
-    data << uint32(talentInfo.Rank);
-    return data;
+    return &_worldPacket;
 }
 }

@@ -132,9 +132,6 @@ void AddItemsSetItem(Player* player, Item const* item)
             if (itemSetSpell->Threshold > eff->EquippedItems.size())
                 continue;
 
-            if (eff->SetBonuses.count(itemSetSpell))
-                continue;
-
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itemSetSpell->SpellID, DIFFICULTY_NONE);
             if (!spellInfo)
             {
@@ -142,8 +139,16 @@ void AddItemsSetItem(Player* player, Item const* item)
                 continue;
             }
 
-            eff->SetBonuses.insert(itemSetSpell);
+            if (!eff->SetBonuses.insert(itemSetSpell).second)
+                continue;
+
             // spell cast only if fit form requirement, in other case will cast at form change
+            if (itemSetSpell->ChrSpecID && ChrSpecialization(itemSetSpell->ChrSpecID) != player->GetPrimarySpecialization())
+                continue;
+
+            if (itemSetSpell->TraitSubTreeID && int32(itemSetSpell->TraitSubTreeID) != player->m_playerData->CurrentCombatTraitConfigSubTreeID)
+                continue;
+
             player->ApplyEquipSpell(spellInfo, nullptr, true);
         }
     }
@@ -186,11 +191,10 @@ void RemoveItemsSetItem(Player* player, Item const* item)
             if (itemSetSpell->Threshold <= eff->EquippedItems.size())
                 continue;
 
-            if (!eff->SetBonuses.count(itemSetSpell))
+            if (!eff->SetBonuses.erase(itemSetSpell))
                 continue;
 
             player->ApplyEquipSpell(sSpellMgr->AssertSpellInfo(itemSetSpell->SpellID, DIFFICULTY_NONE), nullptr, false);
-            eff->SetBonuses.erase(itemSetSpell);
         }
     }
 
@@ -213,8 +217,15 @@ void UpdateItemSetAuras(Player* player, bool formChange)
         for (ItemSetSpellEntry const* itemSetSpell : eff->SetBonuses)
         {
             SpellInfo const* spellInfo = sSpellMgr->AssertSpellInfo(itemSetSpell->SpellID, DIFFICULTY_NONE);
-            player->ApplyEquipSpell(spellInfo, nullptr, false, formChange); // remove spells that not fit to form - removal is skipped if shapeshift condition is satisfied
-            player->ApplyEquipSpell(spellInfo, nullptr, true, formChange);  // add spells that fit form but not active
+
+            if ((itemSetSpell->ChrSpecID && ChrSpecialization(itemSetSpell->ChrSpecID) != player->GetPrimarySpecialization())
+                || (itemSetSpell->TraitSubTreeID && int32(itemSetSpell->TraitSubTreeID) != player->m_playerData->CurrentCombatTraitConfigSubTreeID))
+                player->ApplyEquipSpell(spellInfo, nullptr, false, false);  // item set aura is not for current spec
+            else
+            {
+                player->ApplyEquipSpell(spellInfo, nullptr, false, formChange); // remove spells that not fit to form - removal is skipped if shapeshift condition is satisfied
+                player->ApplyEquipSpell(spellInfo, nullptr, true, formChange);  // add spells that fit form but not active
+            }
         }
     }
 }

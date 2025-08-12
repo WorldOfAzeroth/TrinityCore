@@ -107,7 +107,7 @@ enum InventoryResult : uint8
     EQUIP_ERR_CANT_EQUIP_RATING                            = 81, // You don't have the personal, team, or battleground rating required to buy that item
     EQUIP_ERR_EVENT_AUTOEQUIP_BIND_CONFIRM                 = 82,
     EQUIP_ERR_NOT_SAME_ACCOUNT                             = 83, // Account-bound items can only be given to your own characters.
-    EQUIP_NONE_3                                           = 84,
+    EQUIP_ERR_NONE                                         = 84,
     EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS    = 85, // You can only carry %d %s
     EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_SOCKETED_EXCEEDED_IS = 86, // You can only equip %d |4item:items in the %s category
     EQUIP_ERR_SCALING_STAT_ITEM_LEVEL_EXCEEDED             = 87, // Your level is too high to use that item

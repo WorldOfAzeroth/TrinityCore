@@ -276,9 +276,9 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Movement::MonsterSplineJu
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Movement::MonsterSplineAnimTierTransition const& animTierTransition)
 {
     data << int32(animTierTransition.TierTransitionID);
+    data << uint8(animTierTransition.AnimTier);
     data << uint32(animTierTransition.StartTime);
     data << uint32(animTierTransition.EndTime);
-    data << uint8(animTierTransition.AnimTier);
 
     return data;
 }
@@ -444,9 +444,9 @@ void WorldPackets::Movement::CommonMovement::WriteCreateObjectSplineDataBlock(::
         if (moveSpline.anim_tier)
         {
             data << int32(moveSpline.anim_tier->TierTransitionId);
+            data << uint8(moveSpline.anim_tier->AnimTier);
             data << uint32(moveSpline.effect_start_time);
             data << uint32(0);
-            data << uint8(moveSpline.anim_tier->AnimTier);
         }
 
         //if (HasUnknown901)

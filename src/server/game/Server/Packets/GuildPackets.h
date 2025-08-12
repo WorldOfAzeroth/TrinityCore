@@ -604,7 +604,7 @@ namespace WorldPackets
             ObjectGuid Promotee;
         };
 
-        class GuildOfficerRemoveMember : public ClientPacket
+        class GuildOfficerRemoveMember final : public ClientPacket
         {
         public:
             GuildOfficerRemoveMember(WorldPacket&& packet) : ClientPacket(CMSG_GUILD_OFFICER_REMOVE_MEMBER, std::move(packet)) { }

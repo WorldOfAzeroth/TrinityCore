@@ -69,7 +69,6 @@ namespace WorldPackets
             void Initialize(::Item const* item);
             void Initialize(UF::SocketedGem const* gem);
             void Initialize(::LootItem const& lootItem);
-            void Initialize(::VoidStorageItem const* voidItem);
 
             uint32 ItemID = 0;
             int32 RandomPropertiesSeed = 0;

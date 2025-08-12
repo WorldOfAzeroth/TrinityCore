@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SystemPackets_h__
-#define SystemPackets_h__
+#ifndef TRINITYCORE_SYSTEM_PACKETS_H
+#define TRINITYCORE_SYSTEM_PACKETS_H
 
 #include "Packet.h"
 #include "ObjectGuid.h"
@@ -280,4 +280,4 @@ namespace WorldPackets
     }
 }
 
-#endif // SystemPackets_h__
+#endif // TRINITYCORE_SYSTEM_PACKETS_H

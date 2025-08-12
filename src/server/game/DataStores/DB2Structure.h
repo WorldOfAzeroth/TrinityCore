@@ -179,6 +179,20 @@ struct BankBagSlotPricesEntry
     uint32 Cost;
 };
 
+struct BankTabEntry
+{
+    uint32 ID;
+    uint64 Cost;
+    uint8 BankType;
+    int8 OrderIndex;
+    int32 PlayerConditionID;
+    int32 PurchasePromptTitle;
+    int32 PurchasePromptBody;
+    int32 PurchasePromptConfirmation;
+    int32 TabCleanupConfirmation;
+    int32 TabNameEditBoxHeader;
+};
+
 // structure for BannedAddons.db2
 struct BannedAddonsEntry
 {
@@ -337,7 +351,7 @@ struct Cfg_RegionsEntry
     uint32 Raidorigin;                                              // Date of first raid reset, all other resets are calculated as this date plus interval
     uint8 RegionGroupMask;
     uint32 ChallengeOrigin;
-    uint32 timeEventRegionGroupID;
+    uint32 TimeEventRegionGroupID;
 };
 
 // structure for CharTitles.db2
@@ -426,7 +440,7 @@ struct ChrClassesEntry
     uint16 CinematicSequenceID;
     uint16 DefaultSpec;
     uint8 ID;
-    uint8 HasStrengthAttackBonus;
+    uint8 HasStrengthBonus;
     int8 PrimaryStatPriority;
     int8 DisplayPower;
     uint8 RangedAttackPowerPerAgility;
@@ -1041,6 +1055,9 @@ struct CriteriaEntry
 
         // CriteriaType::MythicPlusRatingAttained                   = 230
         int32 DungeonScore;
+
+        // CriteriaType::BankTabPurchased                           = 260
+        int32 BankType;
 
         // CriteriaType::LearnTaxiNode                              = 262
         int32 TaxiNodesID;

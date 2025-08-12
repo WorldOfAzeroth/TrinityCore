@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TalentPackets_h__
-#define TalentPackets_h__
+#ifndef TRINITYCORE_TALENT_PACKETS_H
+#define TRINITYCORE_TALENT_PACKETS_H
 
 #include "Packet.h"
 #include "DBCEnums.h"
@@ -27,33 +27,55 @@ namespace WorldPackets
 {
     namespace Talent
     {
-        struct TalentInfo
+        struct PvPTalent
         {
-            uint32 TalentID = 0;
-            uint32 Rank = 0;
+            uint16 PvPTalentID = 0;
+            uint8 Slot = 0;
         };
 
         struct TalentGroupInfo
         {
-            uint8 SpecID = 0;
-            uint32 PrimarySpecialization = 0;
-            std::vector<TalentInfo> Talents;
-            std::vector<uint16> Glyphs;
+            uint32 SpecID = 0;
+            std::vector<uint16> TalentIDs;
+            std::vector<PvPTalent> PvPTalents;
+            std::vector<uint32> GlyphIDs;
         };
 
         struct TalentInfoUpdate
         {
-            uint32 UnspentTalentPoints = 0;
+            uint8 ActiveGroup = 0;
+            uint32 PrimarySpecialization = 0;
+            std::vector<TalentGroupInfo> TalentGroups;
+        };
+
+        struct ClassicTalentEntry
+        {
+            int32 TalentID = 0;
+            int32 Rank = 0;
+        };
+
+        struct ClassicTalentGroupInfo
+        {
+            uint8 NumTalents = 0;
+            std::vector<ClassicTalentEntry> Talents;
+            uint8 NumGlyphs = 0;
+            std::vector<uint16> GlyphIDs;
+            int8 Role = 0;
+            int32 PrimarySpecialization = 0;
+        };
+
+        struct ClassicTalentInfoUpdate
+        {
+            int32 UnspentTalentPoints = 0;
             uint8 ActiveGroup = 0;
             bool IsPetTalents = false;
-
-            std::vector<TalentGroupInfo> TalentGroups;
+            std::vector<ClassicTalentGroupInfo> Talents;
         };
 
         class UpdateTalentData final : public ServerPacket
         {
         public:
-            UpdateTalentData() : ServerPacket(SMSG_UPDATE_TALENT_DATA, 2+4+4+4+12) { }
+            explicit UpdateTalentData() : ServerPacket(SMSG_UPDATE_TALENT_DATA, 2+4+4+4+12) { }
 
             WorldPacket const* Write() override;
 
@@ -71,15 +93,13 @@ namespace WorldPackets
             uint16 Rank = 0;
         };
 
-        class LearnPreviewTalents final : public ClientPacket
+        class LearnTalents final : public ClientPacket
         {
         public:
-            LearnPreviewTalents(WorldPacket&& packet) : ClientPacket(CMSG_LEARN_PREVIEW_TALENTS, std::move(packet)) { }
+            explicit LearnTalents(WorldPacket&& packet) : ClientPacket(CMSG_LEARN_TALENTS, std::move(packet)) { }
 
             void Read() override;
-
-            int32 TabIndex = 0;
-            Array<TalentInfo, 100> Talents;
+            Array<uint16, MAX_TALENT_TIERS> Talents;
         };
 
         class SetPrimaryTalentTree final : public ClientPacket
@@ -95,7 +115,7 @@ namespace WorldPackets
         class RespecWipeConfirm final : public ServerPacket
         {
         public:
-            RespecWipeConfirm() : ServerPacket(SMSG_RESPEC_WIPE_CONFIRM, 16 + 4 +1) { }
+            explicit RespecWipeConfirm() : ServerPacket(SMSG_RESPEC_WIPE_CONFIRM, 16 + 4 +1) { }
 
             WorldPacket const* Write() override;
 
@@ -107,7 +127,7 @@ namespace WorldPackets
         class ConfirmRespecWipe final : public ClientPacket
         {
         public:
-            ConfirmRespecWipe(WorldPacket&& packet) : ClientPacket(CMSG_CONFIRM_RESPEC_WIPE, std::move(packet)) { }
+            explicit ConfirmRespecWipe(WorldPacket&& packet) : ClientPacket(CMSG_CONFIRM_RESPEC_WIPE, std::move(packet)) { }
 
             void Read() override;
 
@@ -118,7 +138,7 @@ namespace WorldPackets
         class LearnTalentFailed final : public ServerPacket
         {
         public:
-            LearnTalentFailed() : ServerPacket(SMSG_LEARN_TALENT_FAILED, 1 + 4 + 4 + 2 * MAX_TALENT_TIERS) { }
+            explicit LearnTalentFailed() : ServerPacket(SMSG_LEARN_TALENT_FAILED, 1 + 4 + 4 + 2 * MAX_TALENT_TIERS) { }
 
             WorldPacket const* Write() override;
 
@@ -138,7 +158,7 @@ namespace WorldPackets
         class ActiveGlyphs final : public ServerPacket
         {
         public:
-            ActiveGlyphs() : ServerPacket(SMSG_ACTIVE_GLYPHS) { }
+            explicit ActiveGlyphs() : ServerPacket(SMSG_ACTIVE_GLYPHS) { }
 
             WorldPacket const* Write() override;
 
@@ -146,10 +166,30 @@ namespace WorldPackets
             bool IsFullUpdate = false;
         };
 
-        ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Talent::TalentInfoUpdate const& talentInfoUpdate);
-        ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Talent::TalentGroupInfo const& talentGroupInfo);
-        ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Talent::TalentInfo const& talentInfo);
+        class LearnPvpTalents final : public ClientPacket
+        {
+        public:
+            explicit LearnPvpTalents(WorldPacket&& packet) : ClientPacket(CMSG_LEARN_PVP_TALENTS, std::move(packet)) { }
+
+            void Read() override;
+
+            Array<PvPTalent, 4> Talents;
+        };
+
+        class LearnPvpTalentFailed final : public ServerPacket
+        {
+        public:
+            explicit LearnPvpTalentFailed() : ServerPacket(SMSG_LEARN_PVP_TALENT_FAILED, 1 + 4 + 4 + (2 + 1) * MAX_PVP_TALENT_SLOTS) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 Reason = 0;
+            int32 SpellID = 0;
+            std::vector<PvPTalent> Talents;
+        };
+
+        ByteBuffer& operator<<(ByteBuffer& data, ClassicTalentInfoUpdate const& talentInfoInfo);
     }
 }
 
-#endif // TalentPackets_h__
+#endif // TRINITYCORE_TALENT_PACKETS_H

@@ -53,6 +53,7 @@ ByteBuffer& operator>>(ByteBuffer& data, TraitEntry& traitEntry)
     data >> traitEntry.TraitNodeEntryID;
     data >> traitEntry.Rank;
     data >> traitEntry.GrantedRanks;
+    data >> traitEntry.BonusRanks;
 
     return data;
 }
@@ -63,6 +64,7 @@ ByteBuffer& operator<<(ByteBuffer& data, TraitEntry const& traitEntry)
     data << int32(traitEntry.TraitNodeEntryID);
     data << int32(traitEntry.Rank);
     data << int32(traitEntry.GrantedRanks);
+    data << int32(traitEntry.BonusRanks);
 
     return data;
 }

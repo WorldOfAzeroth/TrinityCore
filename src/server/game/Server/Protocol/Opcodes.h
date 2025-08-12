@@ -782,22 +782,23 @@ enum OpcodeClient : uint32
     CMSG_WRAP_ITEM                                        = 0x350000,
 };
 
-inline constexpr std::size_t NUM_CMSG_OPCODES = 1404;
+inline constexpr std::size_t NUM_CMSG_OPCODES = 1735;
 
 inline constexpr std::ptrdiff_t GetOpcodeArrayIndex(OpcodeClient opcode)
 {
     uint32 idInGroup = opcode & 0xFFFF;
     switch (opcode >> 16)
     {
-        case 0x2E: return idInGroup < 30 ? idInGroup + 0 : -1;
-        case 0x30: return idInGroup < 40 ? idInGroup + 30 : -1;
-        case 0x32: return idInGroup < 33 ? idInGroup + 70 : -1;
-        case 0x34: return idInGroup < 477 ? idInGroup + 103 : -1;
-        case 0x35: return idInGroup < 263 ? idInGroup + 580 : -1;
-        case 0x36: return idInGroup < 10 ? idInGroup + 843 : -1;
-        case 0x37: return idInGroup < 130 ? idInGroup + 853 : -1;
-        case 0x39: return idInGroup < 406 ? idInGroup + 983 : -1;
-        case 0x3A: return idInGroup < 15 ? idInGroup + 1389 : -1;
+        case 0x29: return idInGroup < 31 ? idInGroup + 0 : -1;
+        case 0x2B: return idInGroup < 51 ? idInGroup + 31 : -1;
+        case 0x2C: return idInGroup < 3 ? idInGroup + 82 : -1;
+        case 0x2D: return idInGroup < 37 ? idInGroup + 85 : -1;
+        case 0x2F: return idInGroup < 751 ? idInGroup + 122 : -1;
+        case 0x30: return idInGroup < 301 ? idInGroup + 873 : -1;
+        case 0x31: return idInGroup < 10 ? idInGroup + 1174 : -1;
+        case 0x32: return idInGroup < 132 ? idInGroup + 1184 : -1;
+        case 0x34: return idInGroup < 404 ? idInGroup + 1316 : -1;
+        case 0x35: return idInGroup < 15 ? idInGroup + 1720 : -1;
         default: return -1;
     }
 }
@@ -1968,30 +1969,30 @@ enum OpcodeServer : uint32
     SMSG_XP_AWARDED_FROM_CURRENCY                     = UNKNOWN_OPCODE,
 };
 
-inline constexpr std::size_t NUM_SMSG_OPCODES = 1447;
+inline constexpr std::size_t NUM_SMSG_OPCODES = 1479;
 
 inline constexpr std::ptrdiff_t GetOpcodeArrayIndex(OpcodeServer opcode)
 {
     uint32 idInGroup = opcode & 0xFFFF;
     switch (opcode >> 16)
     {
-        case 0x3B: return idInGroup < 828 ? idInGroup + 0 : -1;
-        case 0x3C: return idInGroup < 10 ? idInGroup + 828 : -1;
-        case 0x3F: return idInGroup < 19 ? idInGroup + 838 : -1;
-        case 0x40: return idInGroup < 34 ? idInGroup + 857 : -1;
-        case 0x41: return idInGroup < 53 ? idInGroup + 891 : -1;
-        case 0x42: return idInGroup < 11 ? idInGroup + 944 : -1;
-        case 0x43: return idInGroup < 12 ? idInGroup + 955 : -1;
-        case 0x45: return idInGroup < 82 ? idInGroup + 967 : -1;
-        case 0x47: return idInGroup < 67 ? idInGroup + 1049 : -1;
-        case 0x49: return idInGroup < 33 ? idInGroup + 1116 : -1;
-        case 0x4B: return idInGroup < 1 ? idInGroup + 1149 : -1;
-        case 0x4C: return idInGroup < 118 ? idInGroup + 1150 : -1;
-        case 0x4E: return idInGroup < 47 ? idInGroup + 1268 : -1;
-        case 0x4F: return idInGroup < 41 ? idInGroup + 1315 : -1;
-        case 0x51: return idInGroup < 82 ? idInGroup + 1356 : -1;
-        case 0x52: return idInGroup < 8 ? idInGroup + 1438 : -1;
-        case 0x54: return idInGroup < 1 ? idInGroup + 1446 : -1;
+        case 0x36: return idInGroup < 857 ? idInGroup + 0 : -1;
+        case 0x37: return idInGroup < 5 ? idInGroup + 857 : -1;
+        case 0x3A: return idInGroup < 18 ? idInGroup + 862 : -1;
+        case 0x3B: return idInGroup < 36 ? idInGroup + 880 : -1;
+        case 0x3C: return idInGroup < 49 ? idInGroup + 916 : -1;
+        case 0x3D: return idInGroup < 11 ? idInGroup + 965 : -1;
+        case 0x3E: return idInGroup < 12 ? idInGroup + 976 : -1;
+        case 0x40: return idInGroup < 82 ? idInGroup + 988 : -1;
+        case 0x42: return idInGroup < 71 ? idInGroup + 1070 : -1;
+        case 0x44: return idInGroup < 33 ? idInGroup + 1141 : -1;
+        case 0x46: return idInGroup < 1 ? idInGroup + 1174 : -1;
+        case 0x48: return idInGroup < 120 ? idInGroup + 1175 : -1;
+        case 0x4A: return idInGroup < 49 ? idInGroup + 1295 : -1;
+        case 0x4B: return idInGroup < 41 ? idInGroup + 1344 : -1;
+        case 0x4D: return idInGroup < 85 ? idInGroup + 1385 : -1;
+        case 0x4E: return idInGroup < 8 ? idInGroup + 1470 : -1;
+        case 0x50: return idInGroup < 1 ? idInGroup + 1478 : -1;
         default: return -1;
     }
 }

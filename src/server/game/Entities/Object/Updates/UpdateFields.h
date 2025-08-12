@@ -398,6 +398,47 @@ struct ZonePlayerForcedReaction : public IsUpdateFieldStructureTag, public HasCh
     void ClearChangesMask();
 };
 
+struct PetCreatureName : public IsUpdateFieldStructureTag, public HasChangesMask<3>
+{
+    UpdateField<uint32, 0, 1> CreatureID;
+    UpdateField<std::string, 0, 2> Name;
+
+    void WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+struct CTROptions : public IsUpdateFieldStructureTag
+{
+    uint32 ConditionalFlags;
+    uint8 FactionGroup;
+    uint32 ChromieTimeExpansionMask;
+
+    void WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const;
+    bool operator==(CTROptions const& right) const;
+    bool operator!=(CTROptions const& right) const { return !(*this == right); }
+};
+
+struct LeaverInfo : public IsUpdateFieldStructureTag
+{
+    ObjectGuid BnetAccountGUID;
+    float LeaveScore;
+    uint32 SeasonID;
+    uint32 TotalLeaves;
+    uint32 TotalSuccesses;
+    int32 ConsecutiveSuccesses;
+    int64 LastPenaltyTime;
+    int64 LeaverExpirationTime;
+    int32 Unknown_1120;
+    uint32 LeaverStatus;
+
+    void WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const;
+    bool operator==(LeaverInfo const& right) const;
+    bool operator!=(LeaverInfo const& right) const { return !(*this == right); }
+};
+
 struct DeclinedNames : public IsUpdateFieldStructureTag, public HasChangesMask<6>
 {
     UpdateFieldArray<std::string, 5, 0, 1> Name;
@@ -880,6 +921,21 @@ struct ActivePlayerData : public IsUpdateFieldStructureTag, public HasChangesMas
     void ClearChangesMask();
 };
 
+struct GameObjectAssistActionData : public IsUpdateFieldStructureTag
+{
+    std::string PlayerName;
+    std::string MonsterName;
+    uint32 VirtualRealmAddress;
+    uint8 Sex;
+    int64 Time;
+    int32 DelveTier;
+
+    void WriteCreate(ByteBuffer& data, GameObject const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, GameObject const* owner, Player const* receiver) const;
+    bool operator==(GameObjectAssistActionData const& right) const;
+    bool operator!=(GameObjectAssistActionData const& right) const { return !(*this == right); }
+};
+
 struct GameObjectData : public IsUpdateFieldStructureTag, public HasChangesMask<20>
 {
     UpdateField<std::vector<uint32>, 0, 1> StateWorldEffectIDs;
@@ -973,6 +1029,90 @@ struct VisualAnim : public IsUpdateFieldStructureTag, public HasChangesMask<5>
     void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
     void ClearChangesMask();
 };
+
+struct ForceSetAreaTriggerPositionAndRotation : public IsUpdateFieldStructureTag
+{
+    ObjectGuid TriggerGUID;
+    TaggedPosition<::Position::XYZ> Position;
+    QuaternionData Rotation;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    bool operator==(ForceSetAreaTriggerPositionAndRotation const& right) const;
+    bool operator!=(ForceSetAreaTriggerPositionAndRotation const& right) const { return !(*this == right); }
+};
+
+struct AreaTriggerSplineCalculator : public IsUpdateFieldStructureTag, public HasChangesMask<3>
+{
+    UpdateField<bool, 0, 1> Catmullrom;
+    DynamicUpdateField<TaggedPosition<Position::XYZ>, 0, 2> Points;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+struct AreaTriggerOrbit : public IsUpdateFieldStructureTag, public HasChangesMask<7>
+{
+    UpdateField<bool, 0, 1> CounterClockwise;
+    UpdateField<TaggedPosition<Position::XYZ>, 0, 2> Center;
+    UpdateField<float, 0, 3> Radius;
+    UpdateField<float, 0, 4> InitialAngle;
+    UpdateField<float, 0, 5> BlendFromRadius;
+    UpdateField<int32, 0, 6> ExtraTimeForBlending;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+
+struct AreaTriggerSphere : public IsUpdateFieldStructureTag, public HasChangesMask<3>
+{
+    UpdateField<float, 0, 1> Radius;
+    UpdateField<float, 0, 2> RadiusTarget;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+struct AreaTriggerBox : public IsUpdateFieldStructureTag, public HasChangesMask<3>
+{
+    UpdateField<TaggedPosition<Position::XYZ>, 0, 1> Extents;
+    UpdateField<TaggedPosition<Position::XYZ>, 0, 2> ExtentsTarget;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+struct AreaTriggerPolygon : public IsUpdateFieldStructureTag, public HasChangesMask<5>
+{
+    DynamicUpdateField<TaggedPosition<Position::XY>, 0, 1> Vertices;
+    DynamicUpdateField<TaggedPosition<Position::XY>, 0, 2> VerticesTarget;
+    UpdateField<float, 0, 3> Height;
+    UpdateField<float, 0, 4> HeightTarget;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
+struct AreaTriggerCylinder : public IsUpdateFieldStructureTag, public HasChangesMask<7>
+{
+    UpdateField<float, 0, 1> Radius;
+    UpdateField<float, 0, 2> RadiusTarget;
+    UpdateField<float, 0, 3> Height;
+    UpdateField<float, 0, 4> HeightTarget;
+    UpdateField<float, 0, 5> LocationZOffset;
+    UpdateField<float, 0, 6> LocationZOffsetTarget;
+
+    void WriteCreate(ByteBuffer& data, AreaTrigger const* owner, Player const* receiver) const;
+    void WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, AreaTrigger const* owner, Player const* receiver) const;
+    void ClearChangesMask();
+};
+
 
 struct AreaTriggerData : public IsUpdateFieldStructureTag, public HasChangesMask<20>
 {

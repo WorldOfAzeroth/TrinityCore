@@ -1802,6 +1802,110 @@ void ZonePlayerForcedReaction::ClearChangesMask()
     _changesMask.ResetAll();
 }
 
+void PetCreatureName::WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const
+{
+    data << uint32(CreatureID);
+    data.WriteBits(Name->size(), 8);
+    data << WorldPackets::SizedString::Data(*Name);
+    data.FlushBits();
+}
+
+void PetCreatureName::WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const
+{
+    Mask changesMask = _changesMask;
+    if (ignoreChangesMask)
+        changesMask.SetAll();
+
+    data.WriteBits(changesMask.GetBlock(0), 3);
+
+    data.FlushBits();
+    if (changesMask[0])
+    {
+        if (changesMask[1])
+        {
+            data << uint32(CreatureID);
+        }
+        if (changesMask[2])
+        {
+            data.WriteBits(Name->size(), 8);
+            data << WorldPackets::SizedString::Data(*Name);
+        }
+    }
+    data.FlushBits();
+}
+
+void PetCreatureName::ClearChangesMask()
+{
+    Base::ClearChangesMask(CreatureID);
+    Base::ClearChangesMask(Name);
+    _changesMask.ResetAll();
+}
+
+void CTROptions::WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const
+{
+    data << uint32(ConditionalFlags);
+    data << uint8(FactionGroup);
+    data << uint32(ChromieTimeExpansionMask);
+}
+
+void CTROptions::WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const
+{
+    data << uint32(ConditionalFlags);
+    data << uint8(FactionGroup);
+    data << uint32(ChromieTimeExpansionMask);
+}
+
+bool CTROptions::operator==(CTROptions const& right) const
+{
+    return ConditionalFlags == right.ConditionalFlags
+        && FactionGroup == right.FactionGroup
+        && ChromieTimeExpansionMask == right.ChromieTimeExpansionMask;
+}
+
+void LeaverInfo::WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const
+{
+    data << BnetAccountGUID;
+    data << float(LeaveScore);
+    data << uint32(SeasonID);
+    data << uint32(TotalLeaves);
+    data << uint32(TotalSuccesses);
+    data << int32(ConsecutiveSuccesses);
+    data << int64(LastPenaltyTime);
+    data << int64(LeaverExpirationTime);
+    data << int32(Unknown_1120);
+    data.WriteBits(LeaverStatus, 1);
+    data.FlushBits();
+}
+
+void LeaverInfo::WriteUpdate(ByteBuffer& data, bool ignoreChangesMask, Player const* owner, Player const* receiver) const
+{
+    data << BnetAccountGUID;
+    data << float(LeaveScore);
+    data << uint32(SeasonID);
+    data << uint32(TotalLeaves);
+    data << uint32(TotalSuccesses);
+    data << int32(ConsecutiveSuccesses);
+    data << int64(LastPenaltyTime);
+    data << int64(LeaverExpirationTime);
+    data << int32(Unknown_1120);
+    data.WriteBits(LeaverStatus, 1);
+    data.FlushBits();
+}
+
+bool LeaverInfo::operator==(LeaverInfo const& right) const
+{
+    return BnetAccountGUID == right.BnetAccountGUID
+        && LeaveScore == right.LeaveScore
+        && SeasonID == right.SeasonID
+        && TotalLeaves == right.TotalLeaves
+        && TotalSuccesses == right.TotalSuccesses
+        && ConsecutiveSuccesses == right.ConsecutiveSuccesses
+        && LastPenaltyTime == right.LastPenaltyTime
+        && LeaverExpirationTime == right.LeaverExpirationTime
+        && Unknown_1120 == right.Unknown_1120
+        && LeaverStatus == right.LeaverStatus;
+}
+
 void DeclinedNames::WriteCreate(ByteBuffer& data, Player const* owner, Player const* receiver) const
 {
     for (uint32 i = 0; i < 5; ++i)
