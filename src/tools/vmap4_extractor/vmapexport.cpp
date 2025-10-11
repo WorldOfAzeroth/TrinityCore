@@ -328,9 +328,9 @@ void ParsMapFiles()
         steps[mapEntry.ChildDepth].push_back(&mapEntry);
 
         // preload WDTs
-        std::string fileName = Trinity::StringFormat("World\\Maps\\{}\\{}.wdt", mapEntryItr->Directory.c_str(), mapEntryItr->Directory.c_str());
-        std::string directory = mapEntryItr->Directory;
-        auto itr = wdts.emplace(std::piecewise_construct, std::forward_as_tuple(mapId), std::forward_as_tuple(std::move(fileName), std::move(directory), maps_that_are_parents.count(mapId) > 0)).first;
+        std::string fileName = Trinity::StringFormat("World\\Maps\\{}\\{}.wdt", mapEntry.Directory, mapEntry.Directory);
+        std::string directory = mapEntry.Directory;
+        auto itr = wdts.try_emplace(mapEntry.Id, fileName, directory, mapEntry.IsParent).first;
         if (!itr->second.init(mapEntry.Id))
             wdts.erase(itr);
     }
@@ -426,7 +426,6 @@ void ReadMapTable()
 
         MapEntry& map = map_ids.emplace_back();
         map.Id = record.GetId();
-        map.WdtFileDataId = record.GetInt32("WdtFileDataID");
         map.ParentMapID = int16(record.GetUInt16("ParentMapID"));
         map.Name = record.GetString("MapName");
         map.Directory = record.GetString("Directory");
@@ -462,8 +461,6 @@ void ReadMapTable()
             parentMapId = parent.ParentMapID;
         }
     }
-
-    std::erase_if(map_ids, [](MapEntry const& map) { return !map.WdtFileDataId; });
 
     printf("Done! (" SZFMTD " maps loaded)\n", map_ids.size());
 }
@@ -623,7 +620,7 @@ static bool RetardCheck()
             if (itr->path().extension() == ".MPQ")
             {
                 printf("MPQ files found in Data directory!\n");
-                printf("This tool works only with World of This tool works only with World of (5.5.x, NOT 5.4.8.18414)\n");
+                printf("This tool works only with World of Warcraft: Mists of Pandaria (5.5.x, NOT 5.4.8.18414)\n");
                 printf("\n");
                 printf("To extract maps for Wrath of the Lich King, rebuild tools using 3.3.5 branch!\n");
                 printf("To extract maps for the current retail version, rebuild tools using master branch!\n");
