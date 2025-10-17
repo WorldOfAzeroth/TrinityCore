@@ -218,6 +218,7 @@ struct BattlePetAbilityEntry
 struct BattlePetBreedQualityEntry
 {
     uint32 ID;
+    uint8 MaxQualityRoll;
     float StateMultiplier;
     uint8 QualityEnum;
 };
@@ -336,6 +337,7 @@ struct Cfg_RegionsEntry
     uint32 Raidorigin;                                              // Date of first raid reset, all other resets are calculated as this date plus interval
     uint8 RegionGroupMask;
     uint32 ChallengeOrigin;
+    uint32 timeEventRegionGroupID;
 };
 
 // structure for CharTitles.db2
@@ -399,7 +401,11 @@ struct ChrClassesEntry
     LocalizedString NameMale;
     LocalizedString NameFemale;
     char const* PetNameToken;
-    uint32 ID;
+    LocalizedString Description;
+    LocalizedString RoleInfoString;
+    LocalizedString DisabledString;
+    LocalizedString HyphenatedNameMale;
+    LocalizedString HyphenatedNameFemale;
     uint32 CreateScreenFileDataID;
     uint32 SelectScreenFileDataID;
     uint32 IconFileDataID;
@@ -408,15 +414,28 @@ struct ChrClassesEntry
     int32 StartingLevel;
     uint32 SpellTextureBlobFileDataID;
     uint32 ArmorTypeMask;
+    int32 CharStartKitUnknown901;
+    int32 MaleCharacterCreationVisualFallback;
+    int32 MaleCharacterCreationIdleVisualFallback;
+    int32 FemaleCharacterCreationVisualFallback;
+    int32 FemaleCharacterCreationIdleVisualFallback;
+    int32 CharacterCreationIdleGroundVisualFallback;
+    int32 CharacterCreationGroundVisualFallback;
+    int32 AlteredFormCharacterCreationIdleVisualFallback;
+    int32 CharacterCreationAnimLoopWaitTimeMsFallback;
     uint16 CinematicSequenceID;
     uint16 DefaultSpec;
+    uint8 ID;
     uint8 HasStrengthAttackBonus;
-    uint8 PrimaryStatPriority;
+    int8 PrimaryStatPriority;
     int8 DisplayPower;
     uint8 RangedAttackPowerPerAgility;
     uint8 AttackPowerPerAgility;
     uint8 AttackPowerPerStrength;
     uint8 SpellClassSet;
+    uint8 ClassColorR;
+    uint8 ClassColorG;
+    uint8 ClassColorB;
     uint8 RolesMask;
     uint8 DamageBonusStat;
     uint8 HasRelicSlot;
@@ -500,6 +519,7 @@ struct ChrCustomizationReqEntry
     LocalizedString ReqSource;
     uint32 ID;
     int32 Flags;
+    uint8 ReqType;
     int32 ClassMask;
     int32 AchievementID;
     int32 QuestID;
@@ -662,6 +682,10 @@ struct ContentTuningEntry
     int32 Flags;
     int32 ExpectedStatModID;
     int32 DifficultyESMID;
+    int32 Unknown1;
+    int32 Unknown2;
+    int32 Unknown3;
+    int32 Unknown4;
 
     EnumFlag<ContentTuningFlag> GetFlags() const { return static_cast<ContentTuningFlag>(Flags); }
 
@@ -1638,6 +1662,7 @@ struct ItemAppearanceEntry
     int32 ItemDisplayInfoID;
     int32 DefaultIconFileDataID;
     int32 UiOrder;
+    int32 TransmogPlayerConditionID;
 };
 
 // structure for ItemArmorQuality.db2
@@ -1882,6 +1907,7 @@ struct ItemModifiedAppearanceEntry
     int32 ItemAppearanceID;
     int32 OrderIndex;
     uint8 TransmogSourceTypeEnum;
+    uint8 Flags;
 };
 
 // structure for ItemModifiedAppearanceExtra.db2
@@ -1900,7 +1926,7 @@ struct ItemNameDescriptionEntry
 {
     uint32 ID;
     LocalizedString Description;
-    int32 Color;
+    uint32 Color;
 };
 
 // structure for ItemPriceBase.db2
@@ -2372,9 +2398,12 @@ struct MapChallengeModeEntry
     uint32 ID;
     uint16 MapID;
     uint8 Flags;
+    uint8 DifficultyID;
     uint32 ExpansionLevel;
     int32 RequiredWorldStateID; // maybe?
     std::array<int16, 3> CriteriaCount;
+    std::array<int32, 6> FirstRewardQuestID;
+    std::array<int32, 6> RewardQuestID;
 };
 
 // structure for MapDifficulty.db2
@@ -2917,6 +2946,7 @@ struct ScalingStatValuesEntry
 {
     uint32 ID;
     int32 Charlevel;
+    int32 EffectiveLevel;
     int32 WeaponDPS1H;
     int32 WeaponDPS2H;
     int32 SpellcasterDPS1H;
@@ -3246,6 +3276,7 @@ struct SpellEffectEntry
     float Variance;
     float ResourceCoefficient;
     float GroupSizeBasePointsCoefficient;
+    int32 EffectBasePointsF;
     std::array<int32, 2> EffectMiscValue;
     std::array<uint32, 2> EffectRadiusIndex;
     flag128 EffectSpellClassMask;
@@ -3604,6 +3635,10 @@ struct SpellVisualKitEntry
     uint32 FallbackSpellVisualKitID;
     uint16 DelayMin;
     uint16 DelayMax;
+    int32 MinimumSpellVisualDensityFilterType;
+    int32 MinimumSpellVisualDensityFilterParam;
+    int32 ReducedSpellVisualDensityFilterType;
+    int32 ReducedSpellVisualDensityFilterParam;
     float FallbackPriority;
     std::array<int32, 2> Flags;
 };
@@ -3813,8 +3848,11 @@ struct TransmogSetEntry
     uint32 TransmogSetGroupID;
     int32 ItemNameDescriptionID;
     uint16 ParentTransmogSetID;
+    int32 CompleteWorldStateID;
     uint8 ExpansionID;
-    int16 UiOrder;
+    int32 PatchID;
+    int32 UiOrder;
+    int32 PlayerConditionID;
 };
 
 // structure for TransmogSetGroup.db2

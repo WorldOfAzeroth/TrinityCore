@@ -345,7 +345,9 @@ enum Powers : int8
     POWER_ALTERNATE_MOUNT               = 25, // TITLE Alternate (Mount)
     POWER_BALANCE                       = 26, // TITLE Balance
     POWER_HAPPINESS                     = 27, // TITLE Happiness
-    MAX_POWERS                          = 28, // SKIP
+    POWER_SHADOW_ORBS	                = 28, // TITLE Shadow Orbs
+    POWER_COMBAT_TEXT_RUNE_DEATH        = 29, // TITLE Death Rune
+    MAX_POWERS                          = 30, // SKIP
     POWER_ALL                           = 127 // SKIP
 };
 
