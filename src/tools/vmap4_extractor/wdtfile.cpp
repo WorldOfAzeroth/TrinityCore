@@ -29,15 +29,6 @@ extern std::shared_ptr<CASC::Storage> CascStorage;
 WDTFile::WDTFile(std::string fileName, std::string mapName, bool cache)
     : _file(CascStorage, fileName.c_str()), _mapName(std::move(mapName))
 {
-    memset(&_header, 0, sizeof(WDT::MPHD));
-    memset(&_adtInfo, 0, sizeof(WDT::MAIN));
-    if (cache)
-    {
-        _adtCache = std::make_unique<ADTCache>();
-        memset(_adtCache->file, 0, sizeof(_adtCache->file));
-    }
-    else
-        _adtCache = nullptr;
 }
 
 WDTFile::~WDTFile() = default;
@@ -116,17 +107,21 @@ bool WDTFile::init(uint32 mapId)
                 {
                     ADT::MODF mapObjDef;
                     _file.read(&mapObjDef, sizeof(ADT::MODF));
+
                     std::string fileName;
                     if (mapObjDef.Flags & 0x8)
-                    {
                         fileName = Trinity::StringFormat("FILE{:08X}.xxx", mapObjDef.Id);
-                        ExtractSingleWmo(fileName);
-                    }
                     else
                         fileName = _wmoNames[mapObjDef.Id];
 
-                    MapObject::Extract(mapObjDef, fileName.c_str(), true, mapId, mapId, dirfile.get(), nullptr);
-                    Doodad::ExtractSet(WmoDoodads[fileName], mapObjDef, true, mapId, mapId, dirfile.get(), nullptr);
+                    if (ExtractedModelData const* extracted = ExtractSingleWmo(fileName))
+                    {
+                        if (extracted->HasCollision())
+                            MapObject::Extract(mapObjDef, fileName.c_str(), true, mapId, mapId, dirfile.get(), nullptr);
+
+                        if (extracted->Doodads)
+                            Doodad::ExtractSet(*extracted->Doodads, mapObjDef, true, mapId, mapId, dirfile.get(), nullptr);
+                    }
                 }
             }
         }
@@ -137,7 +132,7 @@ bool WDTFile::init(uint32 mapId)
     return true;
 }
 
-ADTFile* WDTFile::GetMap(int32 x, int32 y)
+ADTFile* WDTFile::GetMap(int32 x, int32 y, bool createIfMissing)
 {
     if (!(x >= 0 && y >= 0 && x < 64 && y < 64))
         return nullptr;
@@ -146,6 +141,9 @@ ADTFile* WDTFile::GetMap(int32 x, int32 y)
         return _adtCache->file[x][y].get();
 
     if (!(_adtInfo.Data[y][x].Flag & 1))
+        return nullptr;
+
+    if (!createIfMissing)
         return nullptr;
 
     ADTFile* adt;
