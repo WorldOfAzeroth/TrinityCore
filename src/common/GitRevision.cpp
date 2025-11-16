@@ -45,9 +45,13 @@ char const* GitRevision::GetCMakeVersion()
 
 char const* GitRevision::GetHostOSVersion()
 {
-    return
+    return ""
 #ifdef TRINITY_BUILD_HOST_DISTRO_NAME
-        TRINITY_BUILD_HOST_DISTRO_NAME " " TRINITY_BUILD_HOST_DISTRO_VERSION_ID "; "
+        TRINITY_BUILD_HOST_DISTRO_NAME
+#ifdef TRINITY_BUILD_HOST_DISTRO_VERSION_ID
+        " " TRINITY_BUILD_HOST_DISTRO_VERSION_ID
+#endif
+        "; "
 #endif
         TRINITY_BUILD_HOST_SYSTEM " " TRINITY_BUILD_HOST_SYSTEM_VERSION
     ;
@@ -73,6 +77,11 @@ char const* GitRevision::GetFullDatabase()
     return DATABASE_FULL_DATABASE;
 }
 
+char const* GitRevision::GetHotfixesDatabase()
+{
+    return DATABASE_HOTFIXES_DATABASE;
+}
+
 #ifndef TRINITY_API_USE_DYNAMIC_LINKING
 #  define TRINITY_LINKAGE_TYPE_STR "Static"
 #else
@@ -81,26 +90,26 @@ char const* GitRevision::GetFullDatabase()
 
 char const* GitRevision::GetFullVersion()
 {
-  return "TrinityCore rev. " VER_PRODUCTVERSION_STR
-    " (" TRINITY_BUILD_HOST_SYSTEM ", " TRINITY_BUILD_PROCESSOR  ", " _BUILD_DIRECTIVE ", " TRINITY_LINKAGE_TYPE_STR ")";
+    return "TrinityCore rev. " TRINITY_PRODUCTVERSION_STR
+        " (" TRINITY_BUILD_HOST_SYSTEM ", " TRINITY_BUILD_PROCESSOR  ", " TRINITY_BUILD_TYPE ", " TRINITY_LINKAGE_TYPE_STR ")";
 }
 
 char const* GitRevision::GetCompanyNameStr()
 {
-    return VER_COMPANYNAME_STR;
+    return TRINITY_COMPANYNAME_STR;
 }
 
 char const* GitRevision::GetLegalCopyrightStr()
 {
-    return VER_LEGALCOPYRIGHT_STR;
+    return TRINITY_LEGALCOPYRIGHT_STR;
 }
 
 char const* GitRevision::GetFileVersionStr()
 {
-    return VER_FILEVERSION_STR;
+    return TRINITY_FILEVERSION_STR;
 }
 
 char const* GitRevision::GetProductVersionStr()
 {
-    return VER_PRODUCTVERSION_STR;
+    return TRINITY_PRODUCTVERSION_STR;
 }
