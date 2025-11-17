@@ -297,6 +297,10 @@ struct GtSpellScalingEntry
     float Druid = 0.0f;
     float Item = 0.0f;
     float Consumable = 0.0f;
+    float Unknown1 = 0.0f;
+    float Unknown2 = 0.0f;
+    float Unknown3 = 0.0f;
+    float Unknown4 = 0.0f;
 };
 
 struct GtTeamContributionPointsEntry
